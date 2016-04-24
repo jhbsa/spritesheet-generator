@@ -102,7 +102,7 @@ for img in *.png; do
 }"
     scss="$scss
 .sprite-$ALIAS{
-  @include sprite(${W}px, ${H}px, ${X_POS}px, ${Y_POS}px;
+  @include sprite(${W}px, ${H}px, ${X_POS}px, ${Y_POS}px);
 }"
     html="$html <span class='sprite-wrapper'><i class=\"sprite sprite-${ALIAS}\"></i></span>"
     MONTAGE_FILES="$MONTAGE_FILES $img"
