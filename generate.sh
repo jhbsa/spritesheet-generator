@@ -63,8 +63,16 @@ X=0 # sprite tile x position
 Y=0 # sprite tile y position
 W=0 # individual image width
 H=0 # individual image height
-X_POS=$((1*-$_PADDING))
-Y_POS=$((1*-$_PADDING))
+
+if [ ${_TRIM} -eq 1 ]
+then
+    X_POS=0
+    Y_POS=0
+else
+    X_POS=$((-1 * $_PADDING))
+    Y_POS=$((-1 * $_PADDING))
+fi
+
 HIGHEST=0
 WIDEST_ALL=0
 HIGHEST_ALL=0
@@ -117,7 +125,12 @@ for img in *.png; do
     if [ ${X} -eq ${_MAX_COLS} ]
     then
         X=0
-        X_POS=$((1*-$_PADDING))
+        if [ ${_TRIM} -eq 1 ]
+        then
+            X_POS=0
+        else
+            X_POS=$((-1 * $_PADDING))
+        fi
         Y_POS=$(($Y_POS - $(($HIGHEST + $(($_PADDING * 2)) )) ))
         Y=$(($Y + 1))
         HIGHEST=0
@@ -153,8 +166,11 @@ montage -background none *.png -gravity NorthWest -tile ${_MAX_COLS}x -geometry 
 # Go to the parent dir
 cd ..
 
-# Remove sprite transparent space
-#mogrify -trim ${_OUT_NAME}.png
+if [ ${_TRIM} -eq 1 ]
+then
+    # Remove final sprite surrounding empty space
+    mogrify -trim ${_OUT_NAME}.png
+fi
 
 # Remove the temporary dir
 rm -rf ${_NAME}_tmp
