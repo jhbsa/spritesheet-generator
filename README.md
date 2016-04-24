@@ -1,11 +1,11 @@
 # spritesheet-generator
-Generates an sprite sheet image, CSS and SCSS from a directory of PNGs, using the power of bash and imagemagick
+Generates an sprite sheet image, CSS and SCSS from a directory of PNGs, using the power of bash and ImageMagick
 
 Usage example: `./generate.sh -ts -n icons`
 
 ## Requirements
 * Operative System with bash support
-* ImageMagick installed and available via bash (for commands like identify, mogrify and montage)
+* ImageMagick installed and available via bash (for commands like `identify`, `mogrify` and `montage`)
 * A folder with PNG files
 
 ## Features
