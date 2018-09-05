@@ -4,31 +4,38 @@
 
 ### OPTIONS
 _NAME='icons' # relative child folder name, used as base name of everything
-_OUT_NAME=${_NAME} # base output file name
+_OUT_NAME='sprite-'${_NAME} # base output file name
 _TRIM=0
 _SORT=0
-_PADDING=1
-_MAX_COLS=30
+_PADDING=0
+_MAX_COLS=20
+_FIXED_HEIGHT=0
+_FIXED_WIDTH=0
 
-while getopts 'htsp:c:' opt; do
+while getopts 'htsp:c:n:e:w:' opt; do
   case "${opt}" in
     h)
     echo 'Available options: -h (help), -t (trim),'
     echo '-s (sort), -p NUM (padding), -c NUM (max cols)'
     echo '-n (child folder name, used for generate files too)'
+    echo '-e NUM (fixed height px), w NUM (fixed width px'
     exit
     ;;
     t)
     _TRIM=1
-    _OUT_NAME=${_OUT_NAME}'_trimmed'
+    _OUT_NAME='sprite-'${_OUT_NAME}'_trimmed'
     ;;
     s)
     _SORT=1
-    _OUT_NAME=${_OUT_NAME}'_sorted'
+    _OUT_NAME='sprite-'${_OUT_NAME}'_sorted'
     ;;
     p) _PADDING="${OPTARG}" ;;
-    n) _NAME="${OPTARG}" ;;
+    n) _NAME="${OPTARG}"
+    _OUT_NAME='sprite-'${_NAME}
+    ;;
     c) _MAX_COLS="${OPTARG}" ;;
+    e) _FIXED_HEIGHT="${OPTARG}" ;;
+    w) _FIXED_WIDTH="${OPTARG}" ;;
     *) error "Unexpected option ${opt}" ;;
   esac
 done
@@ -77,7 +84,13 @@ HIGHEST=0
 WIDEST_ALL=0
 HIGHEST_ALL=0
 
-css=".sprite { display:inline-block; vertical-align:bottom; background-image:url(${_OUT_NAME}.png); }"
+# css=".${_OUT_NAME} { background: url(${_OUT_NAME}.png) no-repeat top left; }"
+if [ ${_FIXED_HEIGHT} -eq 0 -a ${_FIXED_WIDTH} -eq 0 ]
+then
+    css=".${_OUT_NAME} { background: url(${_OUT_NAME}.png) no-repeat top left; display:inline-block; }"
+else
+    css=".${_OUT_NAME} { background: url(${_OUT_NAME}.png) no-repeat top left; display:inline-block; width:${_FIXED_WIDTH}px; height:${_FIXED_HEIGHT}px; }"
+fi
 scss=$css
 html="<!DOCTYPE html>
 <html>
@@ -94,17 +107,29 @@ for img in *.png; do
     ALIAS=${ALIAS/*px___/} # removes sorting prefix (like 1200-30___ )
     W=`identify -format "%w" ${img}`
     H=`identify -format "%h" ${img}`
+if [ ${_FIXED_HEIGHT} -eq ${H} -a ${_FIXED_WIDTH} -eq ${W} ]
+then
     css="$css
-.sprite-$ALIAS{
+.${_NAME}-$ALIAS{
+  background-position: ${X_POS}px ${Y_POS}px;
+}"
+    scss="$scss
+.${_NAME}-$ALIAS{
+  @include sprite(${W}px, ${H}px, ${X_POS}px, ${Y_POS}px);
+}"
+else
+    css="$css
+.${_NAME}-$ALIAS{
   width:${W}px;
   height:${H}px;
   background-position: ${X_POS}px ${Y_POS}px;
 }"
     scss="$scss
-.sprite-$ALIAS{
+.${_NAME}-$ALIAS{
   @include sprite(${W}px, ${H}px, ${X_POS}px, ${Y_POS}px);
 }"
-    html="$html <span class='sprite-wrapper'><i class=\"sprite sprite-${ALIAS}\"></i></span>"
+fi
+    html="$html <span class='sprite-wrapper'><i class=\"${_OUT_NAME} ${_NAME}-${ALIAS}\"></i></span>"
     MONTAGE_FILES="$MONTAGE_FILES $img"
     X=$(($X + 1))
     X_POS=$(($X_POS - $(($W + $(($_PADDING * 2)) )) ))
@@ -154,14 +179,15 @@ html="$html
         }
     </style>
 <body></html>"
+mkdir ../${_OUT_NAME}
 
-rm ../${_OUT_NAME}.css ../${_OUT_NAME}.scss ../${_OUT_NAME}.html
-echo ${css} >> ../${_OUT_NAME}.css
-echo ${scss} >> ../${_OUT_NAME}.scss
-echo ${html} >> ../${_OUT_NAME}.html
+rm ../${_OUT_NAME}/${_OUT_NAME}.css ../${_OUT_NAME}/${_OUT_NAME}.scss ../${_OUT_NAME}/${_OUT_NAME}.html
+echo ${css} >> ../${_OUT_NAME}/${_OUT_NAME}.css
+echo ${scss} >> ../${_OUT_NAME}/${_OUT_NAME}.scss
+echo ${html} >> ../${_OUT_NAME}/${_OUT_NAME}.html
 
 # Mount sprite with 35 tiles per row and a padding of 2x2 pixels each
-montage -background none *.png -gravity NorthWest -tile ${_MAX_COLS}x -geometry +${_PADDING}+${_PADDING} ../${_OUT_NAME}.png
+montage -background none *.png -gravity NorthWest -tile ${_MAX_COLS}x -geometry +${_PADDING}+${_PADDING} ../${_OUT_NAME}/${_OUT_NAME}.png
 
 # Go to the parent dir
 cd ..
@@ -169,7 +195,7 @@ cd ..
 if [ ${_TRIM} -eq 1 ]
 then
     # Remove final sprite surrounding empty space
-    mogrify -trim ${_OUT_NAME}.png
+    mogrify -trim ./${_OUTNAME}/${_OUT_NAME}.png
 fi
 
 # Remove the temporary dir

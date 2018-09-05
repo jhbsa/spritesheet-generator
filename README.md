@@ -15,10 +15,16 @@ Usage example: `./generate.sh -ts -n icons`
 * Can sort sprites by dimensions
 * Works either with sprites having equal or different dimensions
 
+
 ## Options
 * `-h` Show help
 * `-t` Trims empty surrounding space of every image before joining them, and also the final one
 * `-s` Sorts the images in the sprite sheet by dimensions from smallest to biggest
 * `-c <columns>` Maximum number of sprites in every row
-* `-n <name>` Relative child folder name, also used as base name for generated files
+* `-n <name>` Relative child folder name, also used as base name for generated files (fixed!)
 
+## Modifications from original repository
+* `-w <pixels>` Fixed Width for sprites in px. Setting both width & height will inject w/h constraint in spritesheet class
+* `-e <pixels>` Fixed height for sprite images in px. (h was taken, so I used the next letter of height ;)
+
+I also modified formatting and naming conventions to match our project patterns.
