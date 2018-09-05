@@ -1,0 +1,5 @@
+example usage for sb-icons (or any other folder with images to be put in a sprite sheet)
+assuming source image folder is sb-icons and all icons are the same size (allowing me to optimize css)
+./generate.sh -n sb-icons -w 150 -e 155
+
+If I don't put both w & e(height), then css will have size in each image class. (which is ok, so long as that's intended.)
