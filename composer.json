@@ -1,8 +1,8 @@
 {
-  "name": "farbelous/spritesheet-generator",
+  "name": "jhbsa/spritesheet-generator",
   "description": "Generates CSS, SCSS and a sprite sheet image from a directory of PNGs, using the power of Bash and ImageMagick.",
   "license": "MIT",
-  "homepage": "https://github.com/farbelous/spritesheet-generator/",
+  "homepage": "https://github.com/jhbsa/spritesheet-generator/",
   "minimum-stability": "dev",
   "prefer-stable": true
 }
